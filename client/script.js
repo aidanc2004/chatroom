@@ -1,8 +1,10 @@
 const ws = new WebSocket("ws://localhost:8080");
 
-const message = document.getElementById("message");
+const messages = document.getElementById("messages");
 const button = document.getElementById("button");
 const msg = document.getElementById("msg");
+
+messages.value = ""; // clear textarea on refresh
 
 ws.onopen = () => {
     console.log("Connection created");
@@ -11,7 +13,7 @@ ws.onopen = () => {
 ws.onmessage = (e) => {
     let msg = JSON.parse(e.data); // parse from json to string
     console.log("Got data:", msg);
-    message.innerText = msg;
+    messages.value += msg+'\n';
 }
 
 button.onclick = () => {
