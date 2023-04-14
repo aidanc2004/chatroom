@@ -1,12 +1,20 @@
-const socket = new WebSocket("ws://localhost:8080");
+const ws = new WebSocket("ws://localhost:8080");
 
 const message = document.getElementById("message");
+const button = document.getElementById("button");
+const msg = document.getElementById("msg");
 
-socket.onopen = () => {
+ws.onopen = () => {
     console.log("Connection created");
 }
 
-socket.onmessage = (e) => {
-    console.log("Got data:", e.data);
-    message.innerText = e.data;
+ws.onmessage = (e) => {
+    let msg = JSON.parse(e.data); // parse from json to string
+    console.log("Got data:", msg);
+    message.innerText = msg;
+}
+
+button.onclick = () => {
+    console.log("Sending:", msg.value);
+    ws.send(msg.value);
 }
