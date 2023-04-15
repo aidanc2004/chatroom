@@ -6,7 +6,7 @@ const wss = new WebSocketServer({port: 8080});
 
 let clients = []
 
-// create a client object
+// create a default client object
 function createClient(socket) {
     return {
         socket,
@@ -22,6 +22,17 @@ function indexOfClient(socket) {
             return i;
         }
     }
+}
+
+// allow a client to set their nickname
+function setNickname(ws, msg) {
+    // remove "/nick" from msg
+    let nick = msg.split(" "); 
+    nick.shift();
+    nick = nick.join();
+
+    // set nickname of the client
+    clients[indexOfClient(ws)].nick = nick;
 }
 
 wss.on('listening', () => {
@@ -41,20 +52,14 @@ wss.on('connection', (ws) => {
 
         // if the client is trying to set their nickname
         if (msg.startsWith("/nick")) {
-            // remove "/nick" from msg
-            let nick = msg.split(" "); 
-            nick.shift();
-            nick = nick.join();
-
-            // set nickname of the client
-            clients[indexOfClient(ws)].nick = nick;
-
+            setNickname(ws, msg);
             return;
         }
 
         console.log("Recieved message:", msg);
 
         let nick = clients[indexOfClient(ws)].nick;
+        // TODO: send as an object and parse on client side
         clients.forEach(c => c.socket.send(JSON.stringify(`<${nick}> ${msg}`)))
     })
     
