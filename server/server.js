@@ -30,7 +30,7 @@ function setNickname(ws, msg) {
     let nick = msg.split(" "); 
     nick.shift();
     nick = nick.join();
-
+    
     // set nickname of the client
     clients[indexOfClient(ws)].nick = nick;
 }
@@ -45,7 +45,7 @@ wss.on('connection', (ws) => {
     clients.push(createClient(ws));
 
     // messages are sent as json
-    ws.send(JSON.stringify("<Server> Welcome! :)"));
+    ws.send(JSON.stringify({nick: "Server", msg: "Welcome! :)"}));
 
     ws.on('message', (msg) => {
         msg = ""+msg; // convert from buffer to string
@@ -60,7 +60,7 @@ wss.on('connection', (ws) => {
 
         let nick = clients[indexOfClient(ws)].nick;
         // TODO: send as an object and parse on client side
-        clients.forEach(c => c.socket.send(JSON.stringify(`<${nick}> ${msg}`)))
+        clients.forEach(c => c.socket.send(JSON.stringify({nick, msg})))
     })
     
     ws.on("close", () => {
