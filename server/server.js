@@ -1,16 +1,18 @@
-import { log } from "console";
-import { create } from "domain";
 import {WebSocket, WebSocketServer} from "ws";
 
 const wss = new WebSocketServer({port: 8080});
 
+const MESSAGE_LEN = 100; // max message length
+const NICK_LEN = 10; // max nickname length
+
 let clients = []
+let userNum = 0; // number to use for new users nickname
 
 // create a default client object
 function createClient(socket) {
     return {
         socket,
-        nick: "Nick",
+        nick: `User${++userNum}`,
     };
 }
 
@@ -30,7 +32,12 @@ function setNickname(ws, msg) {
     let nick = msg.split(" "); 
     nick.shift();
     nick = nick.join();
-    
+
+    // set nickname to correct length
+    if (nick.length > NICK_LEN) {
+        nick = nick.split("").splice(0, NICK_LEN).join("");
+    }
+
     // set nickname of the client
     clients[indexOfClient(ws)].nick = nick;
 }
@@ -45,18 +52,21 @@ wss.on('connection', (ws) => {
     clients.push(createClient(ws));
 
     // messages are sent as json
-    ws.send(JSON.stringify({nick: "Server", msg: "Welcome! :)"}));
+    ws.send(JSON.stringify({nick: "Server", msg: "Welcome! Be kind. :)"}));
 
     ws.on('message', (msg) => {
         msg = ""+msg; // convert from buffer to string
+
+        // handled client side but this is backup
+        if (msg.length > MESSAGE_LEN) {
+            msg = msg.split("").splice(0, MESSAGE_LEN).join("");
+        }
 
         // if the client is trying to set their nickname
         if (msg.startsWith("/nick")) {
             setNickname(ws, msg);
             return;
         }
-
-        console.log("Recieved message:", msg);
 
         let nick = clients[indexOfClient(ws)].nick;
         // TODO: send as an object and parse on client side
