@@ -33,6 +33,11 @@ function setNickname(ws, msg) {
     nick.shift();
     nick = nick.join();
 
+    // if nickname is invalid
+    if (nick === "Server") {
+        return;
+    }
+
     // set nickname to correct length
     if (nick.length > NICK_LEN) {
         nick = nick.split("").splice(0, NICK_LEN).join("");
@@ -71,10 +76,10 @@ wss.on('connection', (ws) => {
         let nick = clients[indexOfClient(ws)].nick;
         // TODO: send as an object and parse on client side
         clients.forEach(c => c.socket.send(JSON.stringify({nick, msg})))
-    })
+    });
     
     ws.on("close", () => {
         console.log("Client disconnected");
         clients = clients.filter(s => s !== ws);
-    })
+    });
 });

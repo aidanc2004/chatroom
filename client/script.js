@@ -6,6 +6,7 @@ const button = document.getElementById("button");
 const msg = document.getElementById("msg");
 
 const MESSAGE_LEN = 100; // max message length
+const NICK_LEN = 10; // max nickname length
 
 inputForm.addEventListener("submit", (e) => {
     e.preventDefault(); // make sending a message not refresh the page
@@ -41,6 +42,28 @@ function createMessage(msg) {
     messages.appendChild(msgLi);
 }
 
+// check if the nickname is the correct length and not "Server"
+// returns true if valid, false if invalid
+function checkNickname(msg) {
+    // get nickname
+    let nick = msg.split(" "); 
+    nick.shift();
+    nick = nick.join();
+
+    // check length
+    if (nick.length > NICK_LEN) {
+        alert(`Nickname must be under ${NICK_LEN} characters.`);
+        return false;
+    }
+
+    if (nick === "Server") {
+        alert("Invalid nickname.");
+        return false;
+    }
+
+    return true;
+}
+
 ws.onopen = () => {
     console.log("Connection created");
 }
@@ -62,6 +85,13 @@ button.onclick = () => {
     if (msg.value.length > MESSAGE_LEN) {
         alert(`Messages must be under ${MESSAGE_LEN} characters.`);
         return;
+    }
+
+    if (msg.value.startsWith("/nick")) {
+        // if the nickname is invalid, just return
+        if (!checkNickname(msg.value)) {
+            return;
+        }
     }
 
     ws.send(msg.value);
