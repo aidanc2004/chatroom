@@ -1,0 +1,23 @@
+* {
+    font-size: 1.25rem;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+#messages {
+    overflow: scroll;
+    height: 85vh;
+    padding: 0.5rem;
+
+    border: 1px solid black;
+}
+
+#input {
+    position: absolute;
+    bottom: 1rem;
+
+    border: 1px solid black;
+}
