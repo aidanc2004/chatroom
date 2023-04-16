@@ -11,7 +11,6 @@ const passInput = document.getElementById("pass");
 const loginButton = document.getElementById("loginButton");
 
 const MESSAGE_LEN = 100; // max message length
-const NICK_LEN = 10; // max nickname length
 
 inputForm.addEventListener("submit", (e) => {
     e.preventDefault(); // make sending a message not refresh the page
@@ -30,15 +29,7 @@ function createMessage(msg) {
 
     msgContent.innerText = msg.msg;
 
-    // temporary colors
-    let color;
-    if (msg.nick === "Server") {
-        color = "FireBrick";
-    } else {
-        color = "CornflowerBlue";
-    }
-
-    msgImg.style.backgroundColor = color; 
+    msgImg.style.backgroundColor = msg.color; 
 
     msgLi.appendChild(msgImg);
     msgLi.appendChild(msgNick);
@@ -49,25 +40,25 @@ function createMessage(msg) {
 
 // check if the nickname is the correct length and not "Server"
 // returns true if valid, false if invalid
-function checkNickname(msg) {
-    // get nickname
-    let nick = msg.split(" "); 
-    nick.shift();
-    nick = nick.join();
+// function checkNickname(msg) {
+//     // get nickname
+//     let nick = msg.split(" "); 
+//     nick.shift();
+//     nick = nick.join();
 
-    // check length
-    if (nick.length > NICK_LEN) {
-        alert(`Nickname must be under ${NICK_LEN} characters.`);
-        return false;
-    }
+//     // check length
+//     if (nick.length > NICK_LEN) {
+//         alert(`Nickname must be under ${NICK_LEN} characters.`);
+//         return false;
+//     }
 
-    if (nick === "Server") {
-        alert("Invalid nickname.");
-        return false;
-    }
+//     if (nick === "Server") {
+//         alert("Invalid nickname.");
+//         return false;
+//     }
 
-    return true;
-}
+//     return true;
+// }
 
 function handleLogin(login) {
     if (login.success) {
@@ -108,12 +99,12 @@ button.onclick = () => {
         return;
     }
 
-    if (msg.value.startsWith("/nick")) {
-        // if the nickname is invalid, just return
-        if (!checkNickname(msg.value)) {
-            return;
-        }
-    }
+    // if (msg.value.startsWith("/nick")) {
+    //     // if the nickname is invalid, just return
+    //     if (!checkNickname(msg.value)) {
+    //         return;
+    //     }
+    // }
 
     ws.send(JSON.stringify({
         type: "message",

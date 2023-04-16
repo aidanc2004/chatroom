@@ -2,13 +2,20 @@ import {WebSocket, WebSocketServer} from "ws";
 
 const wss = new WebSocketServer({port: 8080});
 
-const MESSAGE_LEN = 100; // max message length
-const NICK_LEN = 10; // max nickname length
-
-const exampleLogin = {
+// example logins
+let users = [{
     username: "user",
     password: "123",
-}
+    color: "CornflowerBlue",
+    userID: 0
+}, {
+    username: "Aidan",
+    password: "pass",
+    color: "LightSalmon",
+    userID: 1
+}]
+
+const MESSAGE_LEN = 100; // max message length
 
 let clients = []
 let userNum = 0; // number to use for new users nickname
@@ -18,6 +25,7 @@ function createClient(socket) {
     return {
         socket,
         nick: `Guest${++userNum}`,
+        color: "CornflowerBlue"
     };
 }
 
@@ -31,6 +39,16 @@ function indexOfClient(socket) {
     }
 }
 
+// create a json string of a message
+function message(nick, msg, color) {
+    return JSON.stringify({type: "message", nick, msg, color});
+}
+
+// create a json string on if a login succeeded
+function loginSuccess(result) {
+    return JSON.stringify({type: "login", success: result});
+}
+
 // handle a message from the client
 function handleMessage(ws, msg) {
     msg = ""+msg.content; // convert from buffer to string
@@ -41,47 +59,52 @@ function handleMessage(ws, msg) {
     }
 
     // if the client is trying to set their nickname
-    if (msg.startsWith("/nick")) {
-        setNickname(ws, msg);
-        return;
-    }
+    // if (msg.startsWith("/nick")) {
+    //     setNickname(ws, msg);
+    //     return;
+    // }
 
     let nick = clients[indexOfClient(ws)].nick;
-    // TODO: send as an object and parse on client side
-    clients.forEach(c => c.socket.send(JSON.stringify({type: "message", nick, msg})))
+    let color = clients[indexOfClient(ws)].color;
+    clients.forEach(c => c.socket.send(message(nick, msg, color)));
 }
 
-function handleLogin(ws, login) {
-    console.log("Logging in", login.username);
-
-    if (login.username === exampleLogin.username && login.password === exampleLogin.password) {
-        clients[indexOfClient(ws)].nick = exampleLogin.username;
-        ws.send(JSON.stringify({type: "login", success: true}));
-    } else {
-        ws.send(JSON.stringify({type: "login", success: false}));
+// handle a login request from a client
+function handleLogin(ws, msg) {
+    for (let i = 0; i < users.length; i++) {
+        let login = users[i];
+        if (msg.username === login.username && msg.password === login.password) {
+            console.log("Logging in", login.username);
+            clients[indexOfClient(ws)].nick = login.username;
+            clients[indexOfClient(ws)].color = login.color;
+            ws.send(loginSuccess(true));
+            return;
+        }
     }
+
+    ws.send(loginSuccess(false));
 }
 
 // allow a client to set their nickname
-function setNickname(ws, msg) {
-    // remove "/nick" from msg
-    let nick = msg.split(" "); 
-    nick.shift();
-    nick = nick.join();
+// function setNickname(ws, msg) {
+//     // remove "/nick" from msg
+//     let nick = msg.split(" "); 
+//     nick.shift();
+//     nick = nick.join();
 
-    // if nickname is invalid
-    if (nick === "Server") {
-        return;
-    }
+//     // if nickname is invalid
+//     if (nick === "Server") {
+//         return;
+//     }
 
-    // set nickname to correct length
-    if (nick.length > NICK_LEN) {
-        nick = nick.split("").splice(0, NICK_LEN).join("");
-    }
+//     // set nickname to correct length
+//     if (nick.length > NICK_LEN) {
+//         nick = nick.split("").splice(0, NICK_LEN).join("");
+//     }
 
-    // set nickname of the client
-    clients[indexOfClient(ws)].nick = nick;
-}
+//     // set nickname of the client
+//     clients[indexOfClient(ws)].nick = nick;
+// }
 
 wss.on('listening', () => {
     console.log("Listening for connections...");
@@ -93,7 +116,7 @@ wss.on('connection', (ws) => {
     clients.push(createClient(ws));
 
     // messages are sent as json
-    ws.send(JSON.stringify({nick: "Server", msg: "Welcome! Be kind. :)", type: "message"}));
+    ws.send(message("Server", "Welcome! Be kind. :)", "FireBrick"));
 
     ws.on('message', (msg) => {
         msg = JSON.parse(msg);
