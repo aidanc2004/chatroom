@@ -5,6 +5,11 @@ const messages = document.getElementById("messages");
 const button = document.getElementById("button");
 const msg = document.getElementById("msg");
 
+const loginForm = document.getElementById("login");
+const userInput = document.getElementById("user");
+const passInput = document.getElementById("pass");
+const loginButton = document.getElementById("loginButton");
+
 const MESSAGE_LEN = 100; // max message length
 const NICK_LEN = 10; // max nickname length
 
@@ -64,6 +69,14 @@ function checkNickname(msg) {
     return true;
 }
 
+function handleLogin(login) {
+    if (login.success) {
+        alert("Successfully logged in.");
+    } else {
+        alert("Failed to login");
+    }
+}
+
 ws.onopen = () => {
     console.log("Connection created");
 }
@@ -72,7 +85,15 @@ ws.onopen = () => {
 ws.onmessage = (e) => {
     let msg = JSON.parse(e.data); // parse from json to string
 
-    createMessage(msg);
+    if (msg.type === "message") {
+        createMessage(msg);
+        return;
+    }
+
+    if (msg.type === "login") {
+        handleLogin(msg);
+        return;
+    }
 }
 
 // send a message
@@ -94,5 +115,20 @@ button.onclick = () => {
         }
     }
 
-    ws.send(msg.value);
-}
+    ws.send(JSON.stringify({
+        type: "message",
+        content: msg.value
+    }));
+};
+
+// login is obviously unsecure, this is just a prototype so i will fix this
+loginButton.onclick = () => {
+    let username = userInput.value;
+    let password = passInput.value;
+
+    ws.send(JSON.stringify({
+        type: "login",
+        username,
+        password,
+    }));
+};
