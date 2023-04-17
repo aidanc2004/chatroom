@@ -9,6 +9,7 @@ const loginForm = document.getElementById("login");
 const userInput = document.getElementById("user");
 const passInput = document.getElementById("pass");
 const loginButton = document.getElementById("loginButton");
+const signupButton = document.getElementById("signupButton");
 
 const MESSAGE_LEN = 100; // max message length
 
@@ -42,33 +43,19 @@ function createMessage(msg) {
     messages.scrollTop = messages.scrollHeight;
 }
 
-// check if the nickname is the correct length and not "Server"
-// returns true if valid, false if invalid
-// function checkNickname(msg) {
-//     // get nickname
-//     let nick = msg.split(" "); 
-//     nick.shift();
-//     nick = nick.join();
-
-//     // check length
-//     if (nick.length > NICK_LEN) {
-//         alert(`Nickname must be under ${NICK_LEN} characters.`);
-//         return false;
-//     }
-
-//     if (nick === "Server") {
-//         alert("Invalid nickname.");
-//         return false;
-//     }
-
-//     return true;
-// }
-
 function handleLogin(login) {
     if (login.success) {
         alert("Successfully logged in.");
     } else {
         alert("Failed to login");
+    }
+}
+
+function handleSignUp(signup) {
+    if (signup.success) {
+        alert("Successfully signed up.");
+    } else {
+        alert("User already exists.");
     }
 }
 
@@ -80,14 +67,18 @@ ws.onopen = () => {
 ws.onmessage = (e) => {
     let msg = JSON.parse(e.data); // parse from json to string
 
-    if (msg.type === "message") {
-        createMessage(msg);
-        return;
-    }
-
-    if (msg.type === "login") {
-        handleLogin(msg);
-        return;
+    switch (msg.type) {
+        case "message":
+            createMessage(msg);
+            break;
+        case "login":
+            handleLogin(msg);
+            break;
+        case "signup":
+            handleSignUp(msg);
+            break;
+        default:
+            break;
     }
 }
 
@@ -127,3 +118,14 @@ loginButton.onclick = () => {
         password,
     }));
 };
+
+signupButton.onclick = () => {
+    let username = userInput.value;
+    let password = passInput.value;
+
+    ws.send(JSON.stringify({
+        type: "signup",
+        username,
+        password,
+    }));
+}

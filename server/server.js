@@ -47,6 +47,11 @@ function loginSuccess(result) {
     return JSON.stringify({type: "login", success: result});
 }
 
+// create a json string on if a sign up succeeded
+function signUpSuccess(result) {
+    return JSON.stringify({type: "signup", success: result});
+}
+
 // handle a message from the client
 function handleMessage(ws, msg) {
     msg = ""+msg.content; // convert from buffer to string
@@ -55,12 +60,6 @@ function handleMessage(ws, msg) {
     if (msg.length > MESSAGE_LEN) {
         msg = msg.split("").splice(0, MESSAGE_LEN).join("");
     }
-
-    // if the client is trying to set their nickname
-    // if (msg.startsWith("/nick")) {
-    //     setNickname(ws, msg);
-    //     return;
-    // }
 
     let nick = clients[indexOfClient(ws)].nick;
     let color = clients[indexOfClient(ws)].color;
@@ -82,6 +81,30 @@ function handleLogin(ws, msg) {
     }
 
     ws.send(loginSuccess(false));
+}
+
+// handle a sign up request from a client
+function handleSignUp(ws, msg) {
+    // make sure username is not in use
+    for (let i = 0; i < users.length; i++) {
+        let user = users[i];
+        if (msg.username === user.username) {
+            ws.send(signUpSuccess(false));
+            return;
+        }
+    }
+
+    let newUser = {
+        username: msg.username,
+        password: msg.password,
+        color: "Red",
+    }
+
+    users.push(newUser);
+
+    console.log("Created user", msg.username);
+
+    ws.send(signUpSuccess(true));
 }
 
 // send message to all clients
@@ -140,6 +163,9 @@ wss.on('connection', (ws) => {
                 break;
             case "login":
                 handleLogin(ws, msg);
+                break;
+            case "signup":
+                handleSignUp(ws, msg);
                 break;
             default:
                 break;
