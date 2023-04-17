@@ -45,14 +45,7 @@ function handleLogin(login) {
 function handleSignUp(signup) {
     if (signup.success) {
         // login new user
-        let username = userInput.value;
-        let password = passInput.value;
-        
-        ws.send(JSON.stringify({
-            type: "login",
-            username,
-            password,
-        }));
+        loginButton.onclick();
     } else {
         info.innerText = "User already exists";
     }

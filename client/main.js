@@ -38,7 +38,7 @@ function createMessage(msg) {
 }
 
 ws.onopen = () => {
-    console.log("Connection created");
+    console.log("Connected to server.");
 }
 
 // recieving a message
