@@ -10,12 +10,17 @@ const userInput = document.getElementById("user");
 const passInput = document.getElementById("pass");
 const loginButton = document.getElementById("loginButton");
 const signupButton = document.getElementById("signupButton");
+const info = document.getElementById("info");
 
 const MESSAGE_LEN = 100; // max message length
 
 inputForm.addEventListener("submit", (e) => {
     e.preventDefault(); // make sending a message not refresh the page
     msg.value = ""; // clear input field
+});
+
+loginForm.addEventListener("submit", (e) => {
+    e.preventDefault(); // make sending a message not refresh the page
 });
 
 // build an message element and append it to messages
@@ -45,17 +50,27 @@ function createMessage(msg) {
 
 function handleLogin(login) {
     if (login.success) {
-        alert("Successfully logged in.");
+        loginForm.style.display = "none";
+
+        localStorage.setItem("username", login.username);
     } else {
-        alert("Failed to login");
+        info.innerText = "Failed to login."
     }
 }
 
 function handleSignUp(signup) {
     if (signup.success) {
-        alert("Successfully signed up.");
+        // login new user
+        let username = userInput.value;
+        let password = passInput.value;
+        
+        ws.send(JSON.stringify({
+            type: "login",
+            username,
+            password,
+        }));
     } else {
-        alert("User already exists.");
+        info.innerText = "User already exists";
     }
 }
 
@@ -93,13 +108,6 @@ button.onclick = () => {
         alert(`Messages must be under ${MESSAGE_LEN} characters.`);
         return;
     }
-
-    // if (msg.value.startsWith("/nick")) {
-    //     // if the nickname is invalid, just return
-    //     if (!checkNickname(msg.value)) {
-    //         return;
-    //     }
-    // }
 
     ws.send(JSON.stringify({
         type: "message",

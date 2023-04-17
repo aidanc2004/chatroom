@@ -43,8 +43,8 @@ function message(nick, msg, color) {
 }
 
 // create a json string on if a login succeeded
-function loginSuccess(result) {
-    return JSON.stringify({type: "login", success: result});
+function loginSuccess(result, username="") {
+    return JSON.stringify({type: "login", success: result, username});
 }
 
 // create a json string on if a sign up succeeded
@@ -75,7 +75,8 @@ function handleLogin(ws, msg) {
             console.log("Logging in", login.username);
             clients[indexOfClient(ws)].nick = login.username;
             clients[indexOfClient(ws)].color = login.color;
-            ws.send(loginSuccess(true));
+            broadcastOthers(ws, "Server", login.username + " Joined.", "FireBrick");
+            ws.send(loginSuccess(true, login.username));
             return;
         }
     }
@@ -120,27 +121,6 @@ function broadcastOthers(ws, nick, msg, color) {
     });
 }
 
-// allow a client to set their nickname
-// function setNickname(ws, msg) {
-//     // remove "/nick" from msg
-//     let nick = msg.split(" "); 
-//     nick.shift();
-//     nick = nick.join();
-
-//     // if nickname is invalid
-//     if (nick === "Server") {
-//         return;
-//     }
-
-//     // set nickname to correct length
-//     if (nick.length > NICK_LEN) {
-//         nick = nick.split("").splice(0, NICK_LEN).join("");
-//     }
-
-//     // set nickname of the client
-//     clients[indexOfClient(ws)].nick = nick;
-// }
-
 wss.on('listening', () => {
     console.log("Listening for connections...");
 })
@@ -151,8 +131,6 @@ wss.on('connection', (ws) => {
     clients.push(createClient(ws));
 
     ws.send(message("Server", "Welcome! Be kind. :)", "FireBrick"));
-
-    broadcastOthers(ws, "Server", "New User Joined", "FireBrick");
 
     ws.on('message', (msg) => {
         msg = JSON.parse(msg);

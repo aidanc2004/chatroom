@@ -11,7 +11,7 @@ ul {
     padding-left: 0;
 
     overflow: scroll;
-    height: 75vh;
+    height: 85vh;
     padding: 0.5rem;
 
     border: 1px solid black;
@@ -47,4 +47,31 @@ li > img {
 
 #nick {
     padding-right: 0.2rem;
+}
+
+/* login screen */
+
+#login {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    background-color: white;
+    z-index: 10;
+
+    padding-left: 1rem;
+    padding-top: 1rem;
+}
+
+#login * {
+    margin-bottom: 0.5rem;
+}
+
+#login button {
+    margin-right: 0.5rem;
+}
+
+#info {
+    color: red;
 }
