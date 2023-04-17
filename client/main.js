@@ -5,22 +5,11 @@ const messages = document.getElementById("messages");
 const button = document.getElementById("button");
 const msg = document.getElementById("msg");
 
-const loginForm = document.getElementById("login");
-const userInput = document.getElementById("user");
-const passInput = document.getElementById("pass");
-const loginButton = document.getElementById("loginButton");
-const signupButton = document.getElementById("signupButton");
-const info = document.getElementById("info");
-
 const MESSAGE_LEN = 100; // max message length
 
 inputForm.addEventListener("submit", (e) => {
     e.preventDefault(); // make sending a message not refresh the page
     msg.value = ""; // clear input field
-});
-
-loginForm.addEventListener("submit", (e) => {
-    e.preventDefault(); // make sending a message not refresh the page
 });
 
 // build an message element and append it to messages
@@ -46,32 +35,6 @@ function createMessage(msg) {
 
     // automatically scroll down to new message
     messages.scrollTop = messages.scrollHeight;
-}
-
-function handleLogin(login) {
-    if (login.success) {
-        loginForm.style.display = "none";
-
-        localStorage.setItem("username", login.username);
-    } else {
-        info.innerText = "Failed to login."
-    }
-}
-
-function handleSignUp(signup) {
-    if (signup.success) {
-        // login new user
-        let username = userInput.value;
-        let password = passInput.value;
-        
-        ws.send(JSON.stringify({
-            type: "login",
-            username,
-            password,
-        }));
-    } else {
-        info.innerText = "User already exists";
-    }
 }
 
 ws.onopen = () => {
@@ -114,26 +77,3 @@ button.onclick = () => {
         content: msg.value
     }));
 };
-
-// login is obviously unsecure, this is just a prototype so i will fix this
-loginButton.onclick = () => {
-    let username = userInput.value;
-    let password = passInput.value;
-
-    ws.send(JSON.stringify({
-        type: "login",
-        username,
-        password,
-    }));
-};
-
-signupButton.onclick = () => {
-    let username = userInput.value;
-    let password = passInput.value;
-
-    ws.send(JSON.stringify({
-        type: "signup",
-        username,
-        password,
-    }));
-}
