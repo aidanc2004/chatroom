@@ -19,23 +19,27 @@ inputForm.addEventListener("submit", (e) => {
 
 // build an message element and append it to messages
 function createMessage(msg) {
-    let msgLi = document.createElement("li");
-    let msgImg = document.createElement("img");
-    let msgNick = document.createElement("p");
-    let msgContent = document.createElement("p");
+    let li = document.createElement("li");
+    let pfp = document.createElement("img");
+    let username = document.createElement("p");
+    let content = document.createElement("p");
 
-    msgNick.innerText = `<${msg.nick}>`;
-    msgNick.id = "nick";
+    username.innerText = `<${msg.nick}>`;
+    username.id = "nick";
 
-    msgContent.innerText = msg.msg;
+    content.innerText = msg.msg;
 
-    msgImg.style.backgroundColor = msg.color; 
+    pfp.style.backgroundColor = msg.color; 
+    username.style.color = msg.color;
 
-    msgLi.appendChild(msgImg);
-    msgLi.appendChild(msgNick);
-    msgLi.appendChild(msgContent);
+    li.appendChild(pfp);
+    li.appendChild(username);
+    li.appendChild(content);
 
-    messages.appendChild(msgLi);
+    messages.appendChild(li);
+
+    // automatically scroll down to new message
+    messages.scrollTop = messages.scrollHeight;
 }
 
 // check if the nickname is the correct length and not "Server"

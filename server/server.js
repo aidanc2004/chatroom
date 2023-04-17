@@ -7,12 +7,10 @@ let users = [{
     username: "user",
     password: "123",
     color: "CornflowerBlue",
-    userID: 0
 }, {
     username: "Aidan",
     password: "pass",
     color: "LightSalmon",
-    userID: 1
 }]
 
 const MESSAGE_LEN = 100; // max message length
@@ -66,7 +64,8 @@ function handleMessage(ws, msg) {
 
     let nick = clients[indexOfClient(ws)].nick;
     let color = clients[indexOfClient(ws)].color;
-    clients.forEach(c => c.socket.send(message(nick, msg, color)));
+
+    broadcast(nick, msg, color);
 }
 
 // handle a login request from a client
@@ -83,6 +82,19 @@ function handleLogin(ws, msg) {
     }
 
     ws.send(loginSuccess(false));
+}
+
+// send message to all clients
+function broadcast(nick, msg, color) {
+    clients.forEach(c => c.socket.send(message(nick, msg, color)));
+}
+
+// send message to all clients except ws
+function broadcastOthers(ws, nick, msg, color) {
+    clients.forEach(c => {
+        if (c.socket === ws) return;
+        c.socket.send(message(nick, msg, color))
+    });
 }
 
 // allow a client to set their nickname
@@ -115,18 +127,22 @@ wss.on('connection', (ws) => {
 
     clients.push(createClient(ws));
 
-    // messages are sent as json
     ws.send(message("Server", "Welcome! Be kind. :)", "FireBrick"));
+
+    broadcastOthers(ws, "Server", "New User Joined", "FireBrick");
 
     ws.on('message', (msg) => {
         msg = JSON.parse(msg);
 
-        if (msg.type === "message") {
-            handleMessage(ws, msg);
-        }
-
-        if (msg.type === "login") {
-            handleLogin(ws, msg);
+        switch (msg.type) {
+            case "message":
+                handleMessage(ws, msg);
+                break;
+            case "login":
+                handleLogin(ws, msg);
+                break;
+            default:
+                break;
         }
     });
     
