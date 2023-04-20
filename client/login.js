@@ -4,6 +4,7 @@ const passInput = document.getElementById("pass");
 const loginButton = document.getElementById("loginButton");
 const signupButton = document.getElementById("signupButton");
 const info = document.getElementById("info");
+const main = document.getElementById("main");
 
 loginForm.addEventListener("submit", (e) => {
     e.preventDefault(); // make sending a message not refresh the page
@@ -34,6 +35,7 @@ signupButton.onclick = () => {
 
 function handleLogin(login) {
     if (login.success) {
+        main.style.display = "block";
         loginForm.style.display = "none";
 
         localStorage.setItem("username", login.username);

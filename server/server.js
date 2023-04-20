@@ -16,13 +16,13 @@ let users = [{
 const MESSAGE_LEN = 100; // max message length
 
 let clients = []
-let userNum = 0; // number to use for new users nickname
+//let userNum = 0; // number to use for new users nickname
 
 // create a default client object
 function createClient(socket) {
     return {
         socket,
-        nick: `Guest${++userNum}`,
+        nick: `Guest`,
         color: "CornflowerBlue"
     };
 }
@@ -154,7 +154,9 @@ wss.on('connection', (ws) => {
         console.log("Client disconnected");
 
         let nick = clients[indexOfClient(ws)].nick;
-        broadcast("Server", `${nick} left.`, "FireBrick");
+        if (nick !== "Guest") {
+            broadcast("Server", `${nick} left.`, "FireBrick");
+        }
 
         clients = clients.filter(s => s !== ws);
     });
