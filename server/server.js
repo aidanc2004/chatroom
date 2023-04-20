@@ -75,7 +75,7 @@ function handleLogin(ws, msg) {
             console.log("Logging in", login.username);
             clients[indexOfClient(ws)].nick = login.username;
             clients[indexOfClient(ws)].color = login.color;
-            broadcastOthers(ws, "Server", login.username + " Joined.", "FireBrick");
+            broadcastOthers(ws, "Server", `${login.username} joined.`, "FireBrick");
             ws.send(loginSuccess(true, login.username));
             return;
         }
@@ -152,6 +152,10 @@ wss.on('connection', (ws) => {
     
     ws.on("close", () => {
         console.log("Client disconnected");
+
+        let nick = clients[indexOfClient(ws)].nick;
+        broadcast("Server", `${nick} left.`, "FireBrick");
+
         clients = clients.filter(s => s !== ws);
     });
 });
