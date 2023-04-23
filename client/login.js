@@ -5,9 +5,24 @@ const loginButton = document.getElementById("loginButton");
 const signupButton = document.getElementById("signupButton");
 const info = document.getElementById("info");
 const main = document.getElementById("main");
-
-const color = document.getElementById('color');
+const selectColor = document.getElementById('selectColor');
 const updateColor = document.getElementById('updateColor');
+
+function login(username, password) {
+    return JSON.stringify({
+        type: "login",
+        username,
+        password,
+    });
+}
+
+function signup(username, password) {
+    return JSON.stringify({
+        type: "signup",
+        username,
+        password,
+    });
+}
 
 loginForm.addEventListener("submit", (e) => {
     e.preventDefault(); // make sending a message not refresh the page
@@ -15,34 +30,18 @@ loginForm.addEventListener("submit", (e) => {
 
 // login is obviously unsecure, this is just a prototype so i will fix this
 loginButton.onclick = () => {
-    let username = userInput.value;
-    let password = passInput.value;
-
-    ws.send(JSON.stringify({
-        type: "login",
-        username,
-        password,
-    }));
+    ws.send(login(userInput.value, passInput.value));
 };
 
 signupButton.onclick = () => {
-    let username = userInput.value;
-    let password = passInput.value;
-
-    ws.send(JSON.stringify({
-        type: "signup",
-        username,
-        password,
-    }));
+    ws.send(signup(userInput.value, passInput.value));
 }
 
 updateColor.onclick = () => {
-    let username = localStorage.getItem("username");
-    
     ws.send(JSON.stringify({
         type: "color",
-        color: color.value,
-        username, // use a token instead
+        color: selectColor.value,
+        username: localStorage.getItem("username"), // use a token instead
     }));
 }
 
