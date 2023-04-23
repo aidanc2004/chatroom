@@ -15,8 +15,7 @@ let users = [{
 
 const MESSAGE_LEN = 100; // max message length
 
-let clients = []
-//let userNum = 0; // number to use for new users nickname
+let clients = [] // all currently logged in users
 
 // create a default client object
 function createClient(socket) {
@@ -108,6 +107,19 @@ function handleSignUp(ws, msg) {
     ws.send(signUpSuccess(true));
 }
 
+// handle a request to change the users color
+function handleColorChange(ws, msg) {
+    // update for currently logged in users
+    clients[indexOfClient(ws)].color = msg.color;
+
+    // update in list of users
+    for (let i = 0; i < users.length; i++) {
+        if (users[i].username === msg.username) {
+            users[i].color = msg.color;
+        }
+    }
+}
+
 // send message to all clients
 function broadcast(nick, msg, color) {
     clients.forEach(c => c.socket.send(message(nick, msg, color)));
@@ -144,6 +156,9 @@ wss.on('connection', (ws) => {
                 break;
             case "signup":
                 handleSignUp(ws, msg);
+                break;
+            case "color":
+                handleColorChange(ws, msg);
                 break;
             default:
                 break;

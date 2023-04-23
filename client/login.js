@@ -6,6 +6,9 @@ const signupButton = document.getElementById("signupButton");
 const info = document.getElementById("info");
 const main = document.getElementById("main");
 
+const color = document.getElementById('color');
+const updateColor = document.getElementById('updateColor');
+
 loginForm.addEventListener("submit", (e) => {
     e.preventDefault(); // make sending a message not refresh the page
 });
@@ -30,6 +33,16 @@ signupButton.onclick = () => {
         type: "signup",
         username,
         password,
+    }));
+}
+
+updateColor.onclick = () => {
+    let username = localStorage.getItem("username");
+    
+    ws.send(JSON.stringify({
+        type: "color",
+        color: color.value,
+        username, // use a token instead
     }));
 }
 
