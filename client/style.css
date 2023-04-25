@@ -35,6 +35,10 @@ li > img {
     border: 0.1rem solid black;
 }
 
+button {
+    border-radius: 0.5rem;
+}
+
 #main {
     display: none;
 }
@@ -87,15 +91,19 @@ li > img {
 
 #settings {
     position: fixed;
-    height: 100%;
-    width: 100%;
-    left: 0;
-    top: 0;
+    height: 80%;
+    width: 50%;
+    left: 25%;
+    top: 10%;
     background-color: rgb(44, 47, 65);
+    /* background-color: aqua; */
     z-index: 10;
 
     padding-left: 1rem;
     padding-top: 1rem;
+
+    border: black solid 1px;
+    border-radius: 0.5rem;
 
     display: none;
 }
