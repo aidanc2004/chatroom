@@ -5,8 +5,6 @@ const loginButton = document.getElementById("loginButton");
 const signupButton = document.getElementById("signupButton");
 const info = document.getElementById("info");
 const main = document.getElementById("main");
-const selectColor = document.getElementById('selectColor');
-const updateColor = document.getElementById('updateColor');
 
 function login(username, password) {
     return JSON.stringify({
@@ -35,14 +33,6 @@ loginButton.onclick = () => {
 
 signupButton.onclick = () => {
     ws.send(signup(userInput.value, passInput.value));
-}
-
-updateColor.onclick = () => {
-    ws.send(JSON.stringify({
-        type: "color",
-        color: selectColor.value,
-        username: localStorage.getItem("username"), // use a token instead
-    }));
 }
 
 function handleLogin(login) {
