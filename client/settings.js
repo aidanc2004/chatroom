@@ -5,23 +5,27 @@ const settingsBack = document.getElementById("settingsBack");
 const selectColor = document.getElementById('selectColor');
 const updateColor = document.getElementById('updateColor');
 
-const body = document.getElementById("body");
-
 settings.addEventListener("submit", (e) => e.preventDefault());
 
 settingsButton.onclick = () => {
-    main.style.filter = "blur(0.1rem)";
+    // blur background
+    messages.style.filter = "blur(0.1rem)";
+    inputForm.style.filter = "blur(0.1rem)";
     button.setAttribute("disabled", "disabled");
     settingsButton.setAttribute("disabled", "disabled");
 
+    // show settings panel
     settings.style.display = "block";
 }
 
 settingsBack.onclick = () => {
-    main.style.filter = "none";
+    // unblur background
+    messages.style.filter = "none";
+    inputForm.style.filter = "none";
     button.removeAttribute("disabled");
     settingsButton.removeAttribute("disabled");
 
+    // hide settings panel
     settings.style.display = "none";
 }
 
