@@ -1,4 +1,5 @@
 import {WebSocket, WebSocketServer} from "ws";
+import fs from "fs";
 
 const wss = new WebSocketServer({port: 8080});
 
@@ -7,10 +8,12 @@ let users = [{
     username: "user",
     password: "123",
     color: "CornflowerBlue",
+    pfp: "black.png",
 }, {
     username: "Aidan",
     password: "pass",
     color: "LightSalmon",
+    pfp: "black.png",
 }]
 
 const MESSAGE_LEN = 100; // max message length
@@ -37,8 +40,17 @@ function indexOfClient(socket) {
 }
 
 // create a json string of a message
-function message(nick, msg, color) {
-    return JSON.stringify({type: "message", nick, msg, color});
+// TODO: dont send pfp with message, store it client side on login
+function message(nick, msg, color, pfp) {
+    let image;
+
+    if (fs.existsSync(`./server/pfps/${nick}.png`)) {
+        image = fs.readFileSync(`./server/pfps/${nick}.png`, {encoding: "base64"});
+    } else {
+        image = fs.readFileSync("./server/pfps/black.png", {encoding: "base64"}); // example image
+    }
+
+    return JSON.stringify({type: "message", nick, msg, color, image});
 }
 
 // create a json string on if a login succeeded
@@ -121,15 +133,15 @@ function handleColorChange(ws, msg) {
 }
 
 // send message to all clients
-function broadcast(nick, msg, color) {
-    clients.forEach(c => c.socket.send(message(nick, msg, color)));
+function broadcast(nick, msg, color, pfp) {
+    clients.forEach(c => c.socket.send(message(nick, msg, color, pfp)));
 }
 
 // send message to all clients except ws
-function broadcastOthers(ws, nick, msg, color) {
+function broadcastOthers(ws, nick, msg, color, pfp) {
     clients.forEach(c => {
         if (c.socket === ws) return;
-        c.socket.send(message(nick, msg, color))
+        c.socket.send(message(nick, msg, color, pfp))
     });
 }
 

@@ -24,7 +24,7 @@ function createMessage(msg) {
 
     content.innerText = msg.msg;
 
-    pfp.style.backgroundColor = msg.color; 
+    pfp.src = "data:image/png;base64," + msg.image;
     username.style.color = msg.color;
 
     li.appendChild(pfp);
