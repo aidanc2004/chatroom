@@ -1,3 +1,5 @@
+// TODO: allow user to add their own pfp
+
 import {WebSocket, WebSocketServer} from "ws";
 import fs from "fs";
 
@@ -8,12 +10,10 @@ let users = [{
     username: "user",
     password: "123",
     color: "CornflowerBlue",
-    pfp: "black.png",
 }, {
     username: "Aidan",
     password: "pass",
     color: "LightSalmon",
-    pfp: "black.png",
 }]
 
 const MESSAGE_LEN = 100; // max message length
@@ -47,7 +47,7 @@ function message(nick, msg, color, pfp) {
     if (fs.existsSync(`./server/pfps/${nick}.png`)) {
         image = fs.readFileSync(`./server/pfps/${nick}.png`, {encoding: "base64"});
     } else {
-        image = fs.readFileSync("./server/pfps/black.png", {encoding: "base64"}); // example image
+        image = fs.readFileSync("./server/pfps/NoPfp.png", {encoding: "base64"});
     }
 
     return JSON.stringify({type: "message", nick, msg, color, image});
