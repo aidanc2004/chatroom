@@ -45,7 +45,7 @@ updateSettings.onclick = () => {
         ws.send(JSON.stringify({
             type: "settings",
             color: selectColor.value,
-            pfp: reader.result, // pfp can only be png currently
+            pfp: reader.result,
             username: localStorage.getItem("username"), // use a token instead
         }));   
     }

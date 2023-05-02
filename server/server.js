@@ -44,10 +44,10 @@ function indexOfClient(socket) {
 function message(nick, msg, color, pfp) {
     let image;
 
-    if (fs.existsSync(`./server/pfps/${nick}.png`)) {
-        image = fs.readFileSync(`./server/pfps/${nick}.png`, {encoding: "base64"});
+    if (fs.existsSync(`./server/pfps/${nick}`)) {
+        image = fs.readFileSync(`./server/pfps/${nick}`, {encoding: "base64"});
     } else {
-        image = fs.readFileSync("./server/pfps/NoPfp.png", {encoding: "base64"});
+        image = fs.readFileSync("./server/pfps/NoPfp", {encoding: "base64"});
     }
 
     return JSON.stringify({type: "message", nick, msg, color, image});
@@ -121,17 +121,15 @@ function handleSignUp(ws, msg) {
 
 // handle a request to change the users color
 function handleSettings(ws, msg) {
-    // update for currently logged in users
+    // update pfp
+    const pfpBase64 = msg.pfp.replace(/^data:image\/(png|jpe?g|gif);base64,/, '');
+    const pfpBuffer = Buffer.from(pfpBase64, 'base64');
+    fs.writeFileSync(`./server/pfps/${msg.username}`, pfpBuffer);
+
+    // update color for currently logged in users
     clients[indexOfClient(ws)].color = msg.color;
 
-    // update pfp
-    // only works with pngs currently
-    const pfpBase64 = msg.pfp.replace(/^data:image\/png;base64,/, '');
-    const pfpBuffer = Buffer.from(pfpBase64, 'base64');
-
-    fs.writeFileSync(`./server/pfps/${msg.username}.png`, pfpBuffer);
-
-    // update in list of users
+    // update color in list of users
     for (let i = 0; i < users.length; i++) {
         if (users[i].username === msg.username) {
             users[i].color = msg.color;
