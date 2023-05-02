@@ -1,11 +1,17 @@
 const settings = document.getElementById("settings");
 const settingsButton = document.getElementById("settingsButton");
 const settingsBack = document.getElementById("settingsBack");
-
 const selectColor = document.getElementById('selectColor');
-const updateColor = document.getElementById('updateColor');
+const updateSettings = document.getElementById('updateSettings');
+const selectPfp = document.getElementById("selectPfp");
+
+// let pfp = "";
 
 settings.addEventListener("submit", (e) => e.preventDefault());
+
+/*function updatePfp(input) {
+
+}*/
 
 settingsButton.onclick = () => {
     // blur background
@@ -29,10 +35,18 @@ settingsBack.onclick = () => {
     settings.style.display = "none";
 }
 
-updateColor.onclick = () => {
-    ws.send(JSON.stringify({
-        type: "color",
-        color: selectColor.value,
-        username: localStorage.getItem("username"), // use a token instead
-    }));
+updateSettings.onclick = () => {
+    const file = selectPfp.files[0];
+    const reader = new FileReader();
+
+    reader.readAsDataURL(file);
+
+    reader.onload = () => {
+        ws.send(JSON.stringify({
+            type: "settings",
+            color: selectColor.value,
+            pfp: reader.result, // pfp can only be png currently
+            username: localStorage.getItem("username"), // use a token instead
+        }));   
+    }
 }

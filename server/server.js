@@ -120,9 +120,16 @@ function handleSignUp(ws, msg) {
 }
 
 // handle a request to change the users color
-function handleColorChange(ws, msg) {
+function handleSettings(ws, msg) {
     // update for currently logged in users
     clients[indexOfClient(ws)].color = msg.color;
+
+    // update pfp
+    // only works with pngs currently
+    const pfpBase64 = msg.pfp.replace(/^data:image\/png;base64,/, '');
+    const pfpBuffer = Buffer.from(pfpBase64, 'base64');
+
+    fs.writeFileSync(`./server/pfps/${msg.username}.png`, pfpBuffer);
 
     // update in list of users
     for (let i = 0; i < users.length; i++) {
@@ -169,8 +176,8 @@ wss.on('connection', (ws) => {
             case "signup":
                 handleSignUp(ws, msg);
                 break;
-            case "color":
-                handleColorChange(ws, msg);
+            case "settings":
+                handleSettings(ws, msg);
                 break;
             default:
                 break;
