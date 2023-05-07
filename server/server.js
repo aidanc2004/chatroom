@@ -120,7 +120,7 @@ function handleSignUp(ws, msg) {
 // handle a request to change the users color
 function handleSettings(ws, msg) {
     // update pfp
-    const pfpBase64 = msg.pfp.replace(/^data:image\/(png|jpe?g|gif);base64,/, '');
+    const pfpBase64 = msg.pfp.replace(/^data:image\/(png|jpe?g|gif|webp);base64,/, '');
     const pfpBuffer = Buffer.from(pfpBase64, 'base64');
     fs.writeFileSync(`./server/pfps/${msg.username}`, pfpBuffer);
 
