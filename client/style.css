@@ -28,6 +28,7 @@ li {
 }
 
 li > img {
+    object-fit: cover;
     width: 1.75rem;
     height: 1.75rem;
     border-radius: 0.5rem;
