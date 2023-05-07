@@ -5,13 +5,7 @@ const selectColor = document.getElementById('selectColor');
 const updateSettings = document.getElementById('updateSettings');
 const selectPfp = document.getElementById("selectPfp");
 
-// let pfp = "";
-
 settings.addEventListener("submit", (e) => e.preventDefault());
-
-/*function updatePfp(input) {
-
-}*/
 
 settingsButton.onclick = () => {
     // blur background

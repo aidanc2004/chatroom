@@ -71,15 +71,23 @@ button {
     background-color: rgb(44, 47, 65);
     z-index: 10;
 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     padding-left: 1rem;
     padding-top: 1rem;
 }
 
-#login * {
+#login h1 {
+    text-align: center;
+}
+
+#login-container * {
     margin-bottom: 0.5rem;
 }
 
-#login button {
+#login-container button {
     margin-right: 0.5rem;
 }
 

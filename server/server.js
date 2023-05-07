@@ -1,5 +1,3 @@
-// TODO: allow user to add their own pfp
-
 import {WebSocket, WebSocketServer} from "ws";
 import fs from "fs";
 
@@ -14,7 +12,7 @@ let users = [{
     username: "Aidan",
     password: "pass",
     color: "LightSalmon",
-}]
+}];
 
 const MESSAGE_LEN = 100; // max message length
 
