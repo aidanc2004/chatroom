@@ -42,7 +42,7 @@ function indexOfClient(socket) {
 
 // create a json string of a message
 // TODO: dont send pfp with message, store it client side on login
-function message(nick, msg, color, pfp) {
+function message(nick, msg, color) {
     let image;
 
     if (fs.existsSync(`./server/pfps/${nick}`)) {
@@ -141,15 +141,15 @@ function handleSettings(ws, msg) {
 }
 
 // send message to all clients
-function broadcast(nick, msg, color, pfp) {
-    clients.forEach(c => c.socket.send(message(nick, msg, color, pfp)));
+function broadcast(nick, msg, color) {
+    clients.forEach(c => c.socket.send(message(nick, msg, color)));
 }
 
 // send message to all clients except ws
-function broadcastOthers(ws, nick, msg, color, pfp) {
+function broadcastOthers(ws, nick, msg, color) {
     clients.forEach(c => {
         if (c.socket === ws) return;
-        c.socket.send(message(nick, msg, color, pfp))
+        c.socket.send(message(nick, msg, color))
     });
 }
 
