@@ -75,10 +75,17 @@ function handleMessage(ws, msg) {
 
     let nick = clients[indexOfClient(ws)].nick;
     let color = clients[indexOfClient(ws)].color;
+    let image;
+
+    if (fs.existsSync(`./server/pfps/${nick}`)) {
+        image = fs.readFileSync(`./server/pfps/${nick}`, {encoding: "base64"});
+    } else {
+        image = fs.readFileSync("./server/pfps/NoPfp", {encoding: "base64"});
+    }    
+
+    history.push({nick, msg, color, image});
 
     broadcast(nick, msg, color);
-
-    history.push({nick, msg, color});
 }
 
 // handle a login request from a client
