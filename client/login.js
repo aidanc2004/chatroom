@@ -41,6 +41,10 @@ function handleLogin(login) {
         loginForm.style.display = "none";
 
         localStorage.setItem("username", login.username);
+
+        login.history.forEach(msg => {
+            createMessage(msg);
+        })
     } else {
         info.innerText = "Failed to login."
     }

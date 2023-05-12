@@ -1,5 +1,6 @@
 import {WebSocket, WebSocketServer} from "ws";
 import fs from "fs";
+import { log } from "mathjs";
 
 const wss = new WebSocketServer({port: 8080});
 
@@ -17,6 +18,8 @@ let users = [{
 const MESSAGE_LEN = 100; // max message length
 
 let clients = [] // all currently logged in users
+
+let history = []; // all past messages sent
 
 // create a default client object
 function createClient(socket) {
@@ -52,8 +55,8 @@ function message(nick, msg, color, pfp) {
 }
 
 // create a json string on if a login succeeded
-function loginSuccess(result, username="") {
-    return JSON.stringify({type: "login", success: result, username});
+function loginSuccess(result, username="", history="") {
+    return JSON.stringify({type: "login", success: result, username, history});
 }
 
 // create a json string on if a sign up succeeded
@@ -74,6 +77,8 @@ function handleMessage(ws, msg) {
     let color = clients[indexOfClient(ws)].color;
 
     broadcast(nick, msg, color);
+
+    history.push({nick, msg, color});
 }
 
 // handle a login request from a client
@@ -85,7 +90,7 @@ function handleLogin(ws, msg) {
             clients[indexOfClient(ws)].nick = login.username;
             clients[indexOfClient(ws)].color = login.color;
             broadcastOthers(ws, "Server", `${login.username} joined.`, "FireBrick");
-            ws.send(loginSuccess(true, login.username));
+            ws.send(loginSuccess(true, login.username, history));
             return;
         }
     }
