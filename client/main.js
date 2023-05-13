@@ -19,8 +19,8 @@ function createMessage(msg) {
     let username = document.createElement("p");
     let content = document.createElement("p");
 
-    username.innerText = `<${msg.nick}>`;
-    username.id = "nick";
+    username.innerText = `<${msg.username}>`;
+    username.id = "username";
 
     content.innerText = msg.msg;
 

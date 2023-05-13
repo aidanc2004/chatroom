@@ -1,6 +1,5 @@
 import {WebSocket, WebSocketServer} from "ws";
 import fs from "fs";
-import { log } from "mathjs";
 
 const wss = new WebSocketServer({port: 8080});
 
@@ -27,7 +26,7 @@ let history = []; // all past messages sent
 function createClient(socket) {
     return {
         socket,
-        nick: `Guest`,
+        username: `Guest`,
         color: "CornflowerBlue"
     };
 }
@@ -43,18 +42,18 @@ function indexOfClient(socket) {
 }
 
 // get a users profile picture
-function getPfp(nick) {
-    if (fs.existsSync(`./server/pfps/${nick}`)) {
-        return fs.readFileSync(`./server/pfps/${nick}`, {encoding: "base64"});
+function getPfp(username) {
+    if (fs.existsSync(`./server/pfps/${username}`)) {
+        return fs.readFileSync(`./server/pfps/${username}`, {encoding: "base64"});
     }
     return fs.readFileSync("./server/pfps/NoPfp", {encoding: "base64"});
 }
 
 // create a json string of a message
 // TODO: dont send pfp with message, store it client side on login
-function message(nick, msg, color) {
-    let image = getPfp(nick);
-    return JSON.stringify({type: "message", nick, msg, color, image});
+function message(username, msg, color) {
+    let image = getPfp(username);
+    return JSON.stringify({type: "message", username, msg, color, image});
 }
 
 // create a json string on if a login succeeded
@@ -76,13 +75,13 @@ function handleMessage(ws, msg) {
         msg = msg.split("").splice(0, MESSAGE_LEN).join("");
     }
 
-    let nick = clients[indexOfClient(ws)].nick;
+    let username = clients[indexOfClient(ws)].username;
     let color = clients [indexOfClient(ws)].color;
-    let image = getPfp(nick);
+    let image = getPfp(username);
 
-    history.push({nick, msg, color, image}); // TODO: only store what user sent the message
+    history.push({username, msg, color, image});
 
-    broadcast(nick, msg, color);
+    broadcast(username, msg, color);
 }
 
 // handle a login request from a client
@@ -91,7 +90,7 @@ function handleLogin(ws, msg) {
         let login = users[i];
         if (msg.username === login.username && msg.password === login.password) {
             console.log("Logging in", login.username);
-            clients[indexOfClient(ws)].nick = login.username;
+            clients[indexOfClient(ws)].username = login.username;
             clients[indexOfClient(ws)].color = login.color;
             broadcastOthers(ws, "Server", `${login.username} joined.`, "FireBrick");
             ws.send(loginSuccess(true, login.username, history));
@@ -147,7 +146,7 @@ function handleSettings(ws, msg) {
 
     // update color in history (temp)
     for (let i = 0; i < history.length; i++) {
-        if (history[i].nick === msg.username) {
+        if (history[i].username === msg.username) {
             history[i].color = msg.color;
             history[i].image = image;
         }
@@ -155,15 +154,15 @@ function handleSettings(ws, msg) {
 }
 
 // send message to all clients
-function broadcast(nick, msg, color) {
-    clients.forEach(c => c.socket.send(message(nick, msg, color)));
+function broadcast(username, msg, color) {
+    clients.forEach(c => c.socket.send(message(username, msg, color)));
 }
 
 // send message to all clients except ws
-function broadcastOthers(ws, nick, msg, color) {
+function broadcastOthers(ws, username, msg, color) {
     clients.forEach(c => {
         if (c.socket === ws) return;
-        c.socket.send(message(nick, msg, color))
+        c.socket.send(message(username, msg, color))
     });
 }
 
@@ -202,9 +201,9 @@ wss.on('connection', (ws) => {
     ws.on("close", () => {
         console.log("Client disconnected");
 
-        let nick = clients[indexOfClient(ws)].nick;
-        if (nick !== "Guest") {
-            broadcast("Server", `${nick} left.`, "FireBrick");
+        let username = clients[indexOfClient(ws)].username;
+        if (username !== "Guest") {
+            broadcast("Server", `${username} left.`, "FireBrick");
         }
 
         clients = clients.filter(s => s !== ws);
