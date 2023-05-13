@@ -9,10 +9,12 @@ let users = [{
     username: "user",
     password: "123",
     color: "CornflowerBlue",
+    pfp: getPfp("user"),
 }, {
     username: "Aidan",
     password: "pass",
     color: "LightSalmon",
+    pfp: getPfp("Aidan"),
 }];
 
 const MESSAGE_LEN = 100; // max message length
@@ -130,18 +132,26 @@ function handleSettings(ws, msg) {
     const pfpBase64 = msg.pfp.replace(/^data:image\/(png|jpe?g|gif|webp);base64,/, '');
     const pfpBuffer = Buffer.from(pfpBase64, 'base64');
     fs.writeFileSync(`./server/pfps/${msg.username}`, pfpBuffer);
+    let image = getPfp(msg.username);
 
     // update color for currently logged in users
     clients[indexOfClient(ws)].color = msg.color;
 
-    // update color in list of users
+    // update color and pfp in list of users
     for (let i = 0; i < users.length; i++) {
         if (users[i].username === msg.username) {
             users[i].color = msg.color;
+            users[i].pfp = image;
         }
     }
 
-    // TODO: update color in history (temp)
+    // update color in history (temp)
+    for (let i = 0; i < history.length; i++) {
+        if (history[i].nick === msg.username) {
+            history[i].color = msg.color;
+            history[i].image = image;
+        }
+    }
 }
 
 // send message to all clients
