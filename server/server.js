@@ -40,17 +40,18 @@ function indexOfClient(socket) {
     }
 }
 
+// get a users profile picture
+function getPfp(nick) {
+    if (fs.existsSync(`./server/pfps/${nick}`)) {
+        return fs.readFileSync(`./server/pfps/${nick}`, {encoding: "base64"});
+    }
+    return fs.readFileSync("./server/pfps/NoPfp", {encoding: "base64"});
+}
+
 // create a json string of a message
 // TODO: dont send pfp with message, store it client side on login
 function message(nick, msg, color) {
-    let image;
-
-    if (fs.existsSync(`./server/pfps/${nick}`)) {
-        image = fs.readFileSync(`./server/pfps/${nick}`, {encoding: "base64"});
-    } else {
-        image = fs.readFileSync("./server/pfps/NoPfp", {encoding: "base64"});
-    }
-
+    let image = getPfp(nick);
     return JSON.stringify({type: "message", nick, msg, color, image});
 }
 
@@ -74,16 +75,10 @@ function handleMessage(ws, msg) {
     }
 
     let nick = clients[indexOfClient(ws)].nick;
-    let color = clients[indexOfClient(ws)].color;
-    let image;
+    let color = clients [indexOfClient(ws)].color;
+    let image = getPfp(nick);
 
-    if (fs.existsSync(`./server/pfps/${nick}`)) {
-        image = fs.readFileSync(`./server/pfps/${nick}`, {encoding: "base64"});
-    } else {
-        image = fs.readFileSync("./server/pfps/NoPfp", {encoding: "base64"});
-    }    
-
-    history.push({nick, msg, color, image});
+    history.push({nick, msg, color, image}); // TODO: only store what user sent the message
 
     broadcast(nick, msg, color);
 }
@@ -145,6 +140,8 @@ function handleSettings(ws, msg) {
             users[i].color = msg.color;
         }
     }
+
+    // TODO: update color in history (temp)
 }
 
 // send message to all clients
