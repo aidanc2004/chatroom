@@ -40,7 +40,7 @@ updateSettings.onclick = () => {
             type: "settings",
             color: selectColor.value,
             pfp: reader.result,
-            username: localStorage.getItem("username"), // use a token instead
+            username, // use a token instead
         }));   
     }
 }

@@ -6,6 +6,8 @@ const signupButton = document.getElementById("signupButton");
 const info = document.getElementById("info");
 const main = document.getElementById("main");
 
+let username;
+
 function login(username, password) {
     return JSON.stringify({
         type: "login",
@@ -40,7 +42,7 @@ function handleLogin(login) {
         main.style.display = "block";
         loginForm.style.display = "none";
 
-        localStorage.setItem("username", login.username);
+        username = login.username;
 
         login.history.forEach(msg => {
             createMessage(msg);

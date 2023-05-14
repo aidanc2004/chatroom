@@ -86,7 +86,7 @@ function handleMessage(ws, msg) {
 function updatePfpsClient(ws) {
     let pfps = {};
     
-    users["Server"] = getPfp("Server");
+    pfps["Server"] = getPfp("Server");
     users.forEach(user => {pfps[user.username] = user.pfp});
 
     ws.send(JSON.stringify({type: "updatepfps", pfps}));
