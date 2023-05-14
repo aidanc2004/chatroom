@@ -56,7 +56,7 @@ function message(username, msg, color) {
     return JSON.stringify({type: "message", username, msg, color, image});
 }
 
-// create a json string on if a login succeeded
+// create a json string on if a login succeeded, including logged in user and message history
 function loginSuccess(result, username="", history="") {
     return JSON.stringify({type: "login", success: result, username, history});
 }
@@ -84,6 +84,16 @@ function handleMessage(ws, msg) {
     broadcast(username, msg, color);
 }
 
+// update profile pictures on client side
+// TEST FJLKDSJFDKLSJFKLDSJKLFDSJKLFDSJLKFDSJKLSDFLKSFDJLKSDJLKFSDLJKDSLJKFSK
+function updatePfpsClient(ws) {
+    let pfps = {};
+    
+    users.forEach(user => {pfps[user.username] = user.pfp});
+
+    ws.send(JSON.stringify({type: "updatepfps", pfps}));
+}
+
 // handle a login request from a client
 function handleLogin(ws, msg) {
     for (let i = 0; i < users.length; i++) {
@@ -94,6 +104,7 @@ function handleLogin(ws, msg) {
             clients[indexOfClient(ws)].color = login.color;
             broadcastOthers(ws, "Server", `${login.username} joined.`, "FireBrick");
             ws.send(loginSuccess(true, login.username, history));
+            updatePfpsClient(ws);
             return;
         }
     }

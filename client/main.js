@@ -7,6 +7,8 @@ const msg = document.getElementById("msg");
 
 const MESSAGE_LEN = 100; // max message length
 
+let pfps = {}; // users and their profile pictures
+
 inputForm.addEventListener("submit", (e) => {
     e.preventDefault(); // make sending a message not refresh the page
     msg.value = ""; // clear input field
@@ -54,6 +56,9 @@ ws.onmessage = (e) => {
             break;
         case "signup":
             handleSignUp(msg);
+            break;
+        case "updatepfps":
+            pfps = msg.pfps;
             break;
         default:
             break;
