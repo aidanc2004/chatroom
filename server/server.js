@@ -50,10 +50,8 @@ function getPfp(username) {
 }
 
 // create a json string of a message
-// TODO: dont send pfp with message, store it client side on login
 function message(username, msg, color) {
-    let image = getPfp(username);
-    return JSON.stringify({type: "message", username, msg, color, image});
+    return JSON.stringify({type: "message", username, msg, color});
 }
 
 // create a json string on if a login succeeded, including logged in user and message history
@@ -85,10 +83,10 @@ function handleMessage(ws, msg) {
 }
 
 // update profile pictures on client side
-// TEST FJLKDSJFDKLSJFKLDSJKLFDSJKLFDSJLKFDSJKLSDFLKSFDJLKSDJLKFSDLJKDSLJKFSK
 function updatePfpsClient(ws) {
     let pfps = {};
     
+    users["Server"] = getPfp("Server");
     users.forEach(user => {pfps[user.username] = user.pfp});
 
     ws.send(JSON.stringify({type: "updatepfps", pfps}));
@@ -162,6 +160,8 @@ function handleSettings(ws, msg) {
             history[i].image = image;
         }
     }
+
+    updatePfpsClient(ws);
 }
 
 // send message to all clients
@@ -185,6 +185,8 @@ wss.on('connection', (ws) => {
     console.log("Got connection");
 
     clients.push(createClient(ws));
+
+    updatePfpsClient(ws);
 
     ws.send(message("Server", "Welcome! Be kind. :)", "FireBrick"));
 
