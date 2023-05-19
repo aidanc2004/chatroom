@@ -161,7 +161,8 @@ function handleSettings(ws, msg) {
         }
     }
 
-    updatePfpsClient(ws);
+    // update pfps for all currently connected clients
+    clients.forEach(c => updatePfpsClient(c.socket));
 }
 
 // send message to all clients
