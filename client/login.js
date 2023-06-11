@@ -28,7 +28,8 @@ loginForm.addEventListener("submit", (e) => {
     e.preventDefault(); // make sending a message not refresh the page
 });
 
-// login is obviously unsecure, this is just a prototype so i will fix this
+// login is obviously unsecure, this for a hobby project that isn't going to
+// be actually used its fine for now
 loginButton.onclick = () => {
     ws.send(login(userInput.value, passInput.value));
 };

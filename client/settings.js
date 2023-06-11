@@ -40,7 +40,7 @@ updateSettings.onclick = () => {
             type: "settings",
             color: selectColor.value,
             pfp: reader.result,
-            username, // use a token instead
+            username, // NOTE: this should use a token instead
         }));   
     }
 }
